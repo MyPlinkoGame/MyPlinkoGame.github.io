@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko Game</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="score">Money: $<span id="score">1000.00</span></div>
+        <div class="game-layout">
+            <div class="upgrades-panel">
+                <h3>Upgrades</h3>
+                <div class="upgrade-item">
+                    <span>Auto Drop Speed</span>
+                    <span class="upgrade-cost">$500</span>
+                    <button class="upgrade-btn" id="autoDropUpgrade">Buy</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Ball Bounciness</span>
+                    <span class="upgrade-cost">$1000</span>
+                    <button class="upgrade-btn" id="bouncinessUpgrade">Buy</button>
+                </div>
+                <div class="upgrade-item">
+                    <span>Reward Multiplier</span>
+                    <span class="upgrade-cost">$2000</span>
+                    <button class="upgrade-btn" id="rewardMultiplierUpgrade">Buy</button>
+                </div>
+            </div>
+            <canvas id="plinkoCanvas"></canvas>
+        </div>
+        <button id="dropBall">Drop Ball</button>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>

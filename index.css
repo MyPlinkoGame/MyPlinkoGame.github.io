@@ -1,0 +1,96 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #1a1a1a;
+}
+
+.game-container {
+    text-align: center;
+    padding: 20px;
+    width: 900px;
+    margin: 0 auto;
+}
+
+.game-layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+
+.upgrades-panel {
+    background-color: #2a2a2a;
+    border: 2px solid #444;
+    padding: 20px;
+    border-radius: 5px;
+    color: white;
+    width: 200px;
+    position: sticky;
+    top: 20px;
+}
+
+.upgrade-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 5px;
+}
+
+.upgrade-cost {
+    color: #4CAF50;
+    font-size: 14px;
+}
+
+.upgrade-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.upgrade-btn:hover {
+    background-color: #45a049;
+}
+
+.upgrade-btn:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+.score {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+canvas {
+    background-color: #2a2a2a;
+    border: 2px solid #444;
+    height: 650px;
+    width: 600px;
+}
+
+button#dropBall {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button#dropBall:hover {
+    background-color: #45a049;
+}
