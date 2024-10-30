@@ -1,60 +1,92 @@
+import Inventory from './inventory.js';
+
 class Plinko {
     constructor() {
         this.canvas = document.getElementById('plinkoCanvas');
         this.ctx = this.canvas.getContext('2d');
-        this.money = 1000; // Starting money
-        this.ballCost = 10; // Cost per ball
+        this.money = 30000;
+        this.ballCost = 10;
         
-        // Adjust canvas size
-        this.canvas.width = 600;  // Reduced width to fit upgrades panel
-        this.canvas.height = 550; // Reduced from 650 to 550
-        
-        // Game properties
+        // Initialize game state arrays
         this.pegs = [];
         this.balls = [];
-        this.pegRadius = 5;
-        this.ballRadius = 10;
-        
-        // Scoring zones properties
         this.scoreZones = [];
-        this.zoneHeight = 60; // Increased zone height
-        // Update multipliers to be more reasonable values
-        this.multipliers = [40, 15, 10, 5, 2, 0.5, 0.2, 0.2, 0.2, 0.5, 2, 5, 10, 15, 40];
+        this.scoreAnimations = [];
         
-        // Upgrades state
+        // Initialize constants
+        this.pegRadius = 3;
+        this.ballRadius = 5;
+        this.zoneHeight = 100;
+        this.multipliers = [40, 15, 10, 5, 2, 0.5, 0.2, 0.2, 0.5, 2, 5, 10, 15, 40];
+        
+        // Initialize upgrades
         this.upgrades = {
             autoDrop: {
                 level: 0,
-                maxLevel: 3,
-                cost: 500, // Base cost
-                interval: null,
-                dropIntervals: [2000, 1500, 1000, 500] // Speed for each level
+                maxLevel: 5,
+                cost: 500,
+                dropIntervals: [1000, 800, 600, 400, 200, 100],
+                interval: null
             },
             bounciness: {
                 level: 0,
-                maxLevel: 3,
-                cost: 1000, // Base cost
-                values: [0.5, 0.7, 0.85, 1.0] // Bounciness for each level
+                maxLevel: 5,
+                cost: 1000,
+                values: [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
             },
             rewardMultiplier: {
                 level: 0,
-                maxLevel: 3,
-                cost: 2000, // Base cost
-                multipliers: [1.0, 1.5, 2.0, 3.0] // Multiplier for each level
+                maxLevel: 5,
+                cost: 2000,
+                multipliers: [1, 1.2, 1.5, 2, 3, 5]
             }
         };
         
-        this.initializePegs();
-        this.initializeScoreZones();
+        // Update score display immediately
+        document.getElementById('score').textContent = this.money.toFixed(2);
+        
+        // Initialize canvas with smaller size
+        this.canvas.width = 500;
+        this.canvas.height = 500;
+        
+        // Adjust spacing for pegs
+        this.pegSpacing = 30;
+        
+        // Initialize game components
+        this.initializeGameComponents();
+        
+        // Initialize inventory after game components
+        this.inventory = new Inventory();
+        
+        // Set up inventory purchase callback
+        this.inventory.setPurchaseCallback((item, cost) => {
+            if (this.money >= cost) {
+                this.money -= cost;
+                document.getElementById('score').textContent = this.money.toFixed(2);
+                return true; // Purchase successful
+            }
+            return false; // Not enough money
+        });
+        
+        // Setup event listeners
         this.setupEventListeners();
         this.setupUpgradeListeners();
+        
+        // Start game loop
         this.gameLoop();
     }
 
+    initializeGameComponents() {
+        // Initialize all game-related components
+        this.initializePegs();
+        this.initializeScoreZones();
+        // ... other initializations ...
+    }
+
     initializePegs() {
-        const rows = 12;  // Reduced from 15 to 12 rows for smaller height
+        const rows = 12;
         const startPegs = 3;
-        const spacing = 35;
+        const spacing = this.pegSpacing;
         
         for (let row = 0; row < rows; row++) {
             const pegsInRow = startPegs + row;
@@ -64,25 +96,28 @@ class Plinko {
             for (let i = 0; i < pegsInRow; i++) {
                 this.pegs.push({
                     x: startX + (i * spacing) + spacing/2,
-                    y: (row + 1) * spacing + 30  // Reduced top offset from 50 to 30
+                    y: (row + 1) * spacing + 25
                 });
             }
         }
     }
 
     initializeScoreZones() {
-        // Calculate zone width based on the width of the bottom row of pegs
         const bottomRowPegs = this.pegs.slice(-this.multipliers.length);
-        const zoneWidth = (bottomRowPegs[1].x - bottomRowPegs[0].x) / (this.multipliers.length - 1);
+        const zoneWidth = (bottomRowPegs[1].x - bottomRowPegs[0].x);
         const totalWidth = zoneWidth * this.multipliers.length;
         const startX = (this.canvas.width - totalWidth) / 2;
         const lastPegY = bottomRowPegs[0].y;
+
+        // Adjust zone height and position
+        this.zoneHeight = 80;  // Reduced from 100
+        const zoneY = lastPegY + 40;  // Adjusted distance from last peg row
 
         for (let i = 0; i < this.multipliers.length; i++) {
             this.scoreZones.push({
                 x: startX + (i * zoneWidth),
                 width: zoneWidth,
-                y: lastPegY + 70, // Increased from 50 to 70 to move zones further down
+                y: zoneY,
                 height: this.zoneHeight,
                 multiplier: this.multipliers[i]
             });
@@ -103,7 +138,7 @@ class Plinko {
 
     buyUpgrade(type) {
         const upgrade = this.upgrades[type];
-        const cost = upgrade.cost * Math.pow(2, upgrade.level); // Cost increases exponentially
+        const cost = upgrade.cost * Math.pow(2, upgrade.level);
 
         if (this.money >= cost && upgrade.level < upgrade.maxLevel) {
             this.money -= cost;
@@ -115,14 +150,14 @@ class Plinko {
                 this.updateAutoDrop();
             }
             
-            // Update button text and cost
+            // Update button text with next cost
             const button = document.getElementById(`${type}Upgrade`);
             if (upgrade.level >= upgrade.maxLevel) {
                 button.disabled = true;
                 button.textContent = 'MAX';
             } else {
                 const nextCost = upgrade.cost * Math.pow(2, upgrade.level);
-                button.textContent = `Upgrade ($${nextCost})`;
+                button.textContent = `$${nextCost}`;
             }
         }
     }
@@ -280,6 +315,15 @@ class Plinko {
                     const winAmount = ball.value * baseMultiplier * upgradeMultiplier;
                     this.money += winAmount;
                     document.getElementById('score').textContent = this.money.toFixed(2);
+                    
+                    // Add score animation
+                    this.scoreAnimations.push({
+                        x: ball.x,
+                        y: ball.y,
+                        value: winAmount,
+                        opacity: 1,
+                        age: 0
+                    });
                 }
                 ball.scored = true;
             }
@@ -287,6 +331,14 @@ class Plinko {
 
         // Remove balls that fall below canvas
         this.balls = this.balls.filter(ball => ball.y < this.canvas.height + this.ballRadius);
+
+        // Update score animations
+        this.scoreAnimations = this.scoreAnimations.filter(animation => {
+            animation.age += 1;
+            animation.y -= 1; // Move up
+            animation.opacity = 1 - (animation.age / 60); // Fade out over 60 frames
+            return animation.opacity > 0;
+        });
     }
 
     draw() {
@@ -305,19 +357,20 @@ class Plinko {
             this.ctx.fillStyle = color;
             this.ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
             
-            // Draw multiplier text
+            // Improved multiplier text rendering
             this.ctx.fillStyle = 'white';
-            this.ctx.font = '14px Arial';
+            this.ctx.font = '11px Arial';
             this.ctx.textAlign = 'center';
             
             const baseMultiplier = this.multipliers[index];
             const upgradeMultiplier = this.upgrades.rewardMultiplier.multipliers[this.upgrades.rewardMultiplier.level];
             const totalMultiplier = baseMultiplier * upgradeMultiplier;
             
+            // Split text into two lines for better readability
             this.ctx.fillText(
-                `x${totalMultiplier.toFixed(1)}`,
+                `×${totalMultiplier.toFixed(1)}`,
                 zone.x + zone.width / 2,
-                zone.y + zone.height / 2
+                zone.y + zone.height / 2 + 5
             );
         });
 
@@ -338,7 +391,19 @@ class Plinko {
             this.ctx.fill();
             this.ctx.closePath();
         });
-    } // <-- Add this closing brace
+
+        // Draw score animations
+        this.scoreAnimations.forEach(animation => {
+            this.ctx.fillStyle = `rgba(255, 255, 255, ${animation.opacity})`;
+            this.ctx.font = '20px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(
+                `+${animation.value.toFixed(1)}`,
+                animation.x,
+                animation.y
+            );
+        });
+    }
 
     gameLoop() {
         this.update();

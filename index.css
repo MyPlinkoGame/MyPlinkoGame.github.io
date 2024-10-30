@@ -10,42 +10,53 @@ body {
 .game-container {
     text-align: center;
     padding: 20px;
-    width: 900px;
+    width: 800px;
     margin: 0 auto;
 }
 
 .game-layout {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     align-items: flex-start;
     flex-direction: row-reverse;
-    justify-content: center;
+    justify-content: flex-start;
+    margin: 0 auto;
+    max-width: 820px;
 }
 
 .upgrades-panel {
     background-color: #2a2a2a;
     border: 2px solid #444;
-    padding: 20px;
+    padding: 15px;
     border-radius: 5px;
     color: white;
-    width: 200px;
-    position: sticky;
-    top: 20px;
+    width: 270px;
+}
+
+.upgrades-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 10px;
+}
+
+.upgrade-item:last-child {
+    grid-column: 1 / -1;
+    width: 50%;
+    margin: 0 auto;
 }
 
 .upgrade-item {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    margin-bottom: 15px;
     padding: 10px;
     background-color: #333;
     border-radius: 5px;
 }
 
 .upgrade-cost {
-    color: #4CAF50;
-    font-size: 14px;
+    display: none;
 }
 
 .upgrade-btn {
@@ -53,9 +64,10 @@ body {
     color: white;
     border: none;
     border-radius: 3px;
-    padding: 5px 10px;
+    padding: 8px 12px;
     cursor: pointer;
     font-size: 14px;
+    transition: background-color 0.2s ease;
 }
 
 .upgrade-btn:hover {
@@ -76,8 +88,10 @@ body {
 canvas {
     background-color: #2a2a2a;
     border: 2px solid #444;
-    height: 650px;
-    width: 600px;
+    width: 500px;
+    height: 500px;
+    display: block;
+    margin-right: auto;
 }
 
 button#dropBall {
@@ -92,5 +106,154 @@ button#dropBall {
 }
 
 button#dropBall:hover {
+    background-color: #45a049;
+}
+
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 270px;
+}
+
+.inventory-panel {
+    background-color: #2a2a2a;
+    border: 2px solid #444;
+    padding: 5px 15px 15px 15px;
+    border-radius: 5px;
+    color: white;
+    width: 270px;
+}
+
+.inventory-panel h3 {
+    margin: 0 0 5px 0;
+	padding: 0;
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 4px;
+    padding: 10px;
+    background-color: #222;
+    border-radius: 3px;
+    margin-bottom: 10px;
+}
+
+.inventory-slot {
+    aspect-ratio: 1;
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.inventory-slot:hover {
+    background-color: #3a3a3a;
+    border-color: #555;
+}
+
+.inventory-slot img {
+    max-width: 80%;
+    max-height: 80%;
+}
+
+.inventory-slot .quantity {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 1px 3px;
+    border-radius: 3px;
+    font-size: 10px;
+}
+
+.inventory-slot.empty {
+    background-color: #2d2d2d;
+    border: 1px dashed #444;
+    cursor: default;
+}
+
+.inventory-slot.empty:hover {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+
+.item-icon {
+    font-size: 22px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.inventory-slot.dragging {
+    opacity: 0.5;
+    border: 1px dashed #666;
+    background-color: #2d2d2d;
+}
+
+.inventory-slot.drag-over {
+    background-color: #3a3a3a;
+    border: 1px dashed #4CAF50;
+}
+
+.shop-panel {
+    background-color: #2a2a2a;
+    border: 2px solid #444;
+    padding: 20px;
+    border-radius: 5px;
+    color: white;
+    width: 200px;
+}
+
+.shop-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 5px;
+}
+
+.shop-cost {
+    color: #4CAF50;
+    font-size: 14px;
+}
+
+.shop-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.shop-btn:hover {
+    background-color: #45a049;
+}
+
+.inventory-panel .shop-btn {
+    margin-top: 5px;
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.inventory-panel .shop-btn:hover {
     background-color: #45a049;
 }
